@@ -7,7 +7,18 @@ import csv
 import DateExtractor as de
 import SQLForCSVData as sqlcvs
 
+"""
+getDatabase returns a SQL database of all the valid entries.
 
+Use getEntries to retreive all entries in a list.
+
+@param relative path to a csv file with appropriate data
+
+@returns SQl database
+
+Author: Elliot Winch
+Date: 2017-14-10
+"""
 def getDatabase(csvFilePath):
     with open(csvFilePath, 'r') as csvFile:
         csvreader = csv.reader(csvFile, delimiter = ",")

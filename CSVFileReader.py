@@ -90,6 +90,3 @@ def getDictionary(csvFilePath):
                     
 if __name__ == "__main__":
     getDatabase("Data/bitcoin_price.csv")
-    
-    
-

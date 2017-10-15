@@ -79,7 +79,7 @@ def getDictionary(csvFilePath):
                     
                     
 if __name__ == "__main__":
-    getDatabase("bitcoin_price.csv")
+    getDatabase("Data/bitcoin_price.csv")
     
     
 

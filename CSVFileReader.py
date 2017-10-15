@@ -12,8 +12,7 @@ def getDatabase(csvFilePath):
     with open(csvFilePath, 'r') as csvFile:
         csvreader = csv.reader(csvFile, delimiter = ",")
         database = sqlcvs.Database(csvreader)
-        print database.getName()
-        
+    return database
 """
 getList can be called on a relative file path for any
 of the provided csv data files.

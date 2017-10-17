@@ -2,10 +2,9 @@
 
 #Author: Elliot Winch 
 
-
 import csv
 import DateExtractor as de
-import SQLForCSVData as sqlcvs
+from SQLForCSVData import Database
 
 """
 getDatabase returns a SQL database of all the valid entries.
@@ -20,10 +19,8 @@ Author: Elliot Winch
 Date: 2017-14-10
 """
 def getDatabase(csvFilePath):
-    with open(csvFilePath, 'r') as csvFile:
-        csvreader = csv.reader(csvFile, delimiter = ",")
-        database = sqlcvs.Database(csvreader)
-    return database
+    return Database(csvFilePath)
+    
 """
 getList can be called on a relative file path for any
 of the provided csv data files.
@@ -74,19 +71,29 @@ Date: 2017-14-10
 """
 def getDictionary(csvFilePath): 
     dictionary = {}
-    
+        
     with open(csvFilePath, 'r') as csvFile:
         csvreader = csv.reader(csvFile, delimiter = ",")
-                
-        for row in csvreader:
+        
+        for row in csvreader:         
             try:
                 date = de.getDate(row[0])
-                dictionary[date] = row[1:]
             except TypeError:
                 continue
-                
+            
+            entry = row[1:]
+            for i in range(0, len(entry)):
+                try:
+                    entry[i] = float(entry[i])
+                except ValueError:
+                    try:
+                        entry[i] = int(entry[i].replace(',',''))
+                    except ValueError:
+                        if(entry[i] == '-'):
+                            entry[i] = 0
+                        else: 
+                            continue
+                            
+            dictionary[date] = entry
+        #end for loop
     return dictionary
-                    
-                    
-if __name__ == "__main__":
-    getDatabase("Data/bitcoin_price.csv")

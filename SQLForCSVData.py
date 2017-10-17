@@ -1,16 +1,11 @@
 import sqlite3
+import csv
 
 """
 Author: Elliot Winch
 Date: 2017-10-14
 """
-class Database():
-    #Instance variables
-    databaseName = 'csvdb'
-    columnNames = []
-    columnNamesString = ''
-    db = sqlite3.connect('csvdb.db');
-    
+class Database(): 
     """
     Instaniate method for database. It will call addEntries to
     build the database. 
@@ -18,37 +13,46 @@ class Database():
     @param csvreader built from a csv file path
     @optional param string database name
     """
-    def __init__(self, csvreader, dbname=databaseName):        
+    def __init__(self, csvFilePath, dbname='csvdb'):  
+        #Instance variables
         self.databaseName = dbname
-        self.db.text_factory = str
-        self.db.row_factory = sqlite3.Row
-        self.db.execute('drop table if exists ' + dbname)
-         
-        self.columnNamesString += ' ('
-        createArg = 'create table ' + dbname + ' ( '
+        self.columnNames = []
+        self.columnNamesString = ''
+        self.db = sqlite3.connect('csvdb.db');
         
-        columnHeads = csvreader.next()
-        numColumnHeads = len(columnHeads) 
+        with open(csvFilePath, 'r') as csvFile:
+            csvreader = csv.reader(csvFile, delimiter = ",")        
         
-        for i in range(0, numColumnHeads):
-            columnHeads[i] = columnHeads[i].replace(" ","_")
-            self.columnNames.append(columnHeads[i])
-            self.columnNamesString += columnHeads[i]
-
-            createArg += columnHeads[i] + ' int'
-
-            if(i < numColumnHeads - 1):
-                createArg += ', '
-                self.columnNamesString += ', '
-
+            self.databaseName = dbname
+            self.db.text_factory = str
+            self.db.row_factory = sqlite3.Row
+            self.db.execute('drop table if exists ' + dbname)
+                
+            self.columnNamesString += ' ('
+            createArg = 'create table ' + dbname + ' ( '
+            
+            columnHeads = csvreader.next()
+            numColumnHeads = len(columnHeads) 
+            
+            for i in range(0, numColumnHeads):
+                columnHeads[i] = columnHeads[i].replace(" ","_")
+                self.columnNames.append(columnHeads[i])
+                self.columnNamesString += columnHeads[i]
         
-        createArg += ')'
-        self.columnNamesString += ') '
-    
-        self.db.execute(createArg)
+                createArg += columnHeads[i] + ' int'
         
-        self.addEntries(csvreader)
-     
+                if(i < numColumnHeads - 1):
+                    createArg += ', '
+                    self.columnNamesString += ', '
+        
+            
+            createArg += ')'
+            self.columnNamesString += ') '
+        
+            self.db.execute(createArg)
+            
+            self.addEntries(csvreader)
+             
     """
     Helper method for __init__. Builts the database from the csvreader
     
@@ -106,7 +110,7 @@ class Database():
     the list will be in descending order (highest value first). string
     'columns': providing a string with valid column titles will return only 
     those columns. 
-    """         
+    """        
     def getEntries(self, orderby = 'Date', orderbydesc = 0, columns = '*'):
         allEntries = []
         if(columns == '*'):

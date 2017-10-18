@@ -2,7 +2,6 @@ import CSVFileReader as csvfr
 import matplotlib.pyplot as plt
 from matplotlib.finance import candlestick_ohlc
 import matplotlib.dates as mdates
-#import pandas
 
 """
 Displays a candlestick graph for a given dataset. 
@@ -21,13 +20,14 @@ Will eventually:
 class CandlestickGraph():
     def __init__(self):
         self.fileCounter = 0
-    
-    def produceCandlestickGraph(self, entries, save): 
-            
-        dates = sorted(entries)
-            
-        fig, ax1 = plt.subplots()
         
+        
+    def produceWithDatabase():
+        pass
+        
+    def produceWithDictionary(self, entries, name, save):
+        dates = sorted(entries)
+                    
         dateVals = []
         opens = []
         closes = []
@@ -41,11 +41,21 @@ class CandlestickGraph():
             lows.append(entries[d][2])
             closes.append(entries[d][3])
         
+        self.produceCandlestickGraph(dateVals, opens, highs, lows, closes, name, save)  
+        
+        
+    def produceWithList():
+        pass
+    
+    def produceCandlestickGraph(self, dateVals, opens, highs, lows, closes, name, save): 
+        
+        fig, ax1 = plt.subplots()
+        
         quotes = [tuple([dateVals[i],
                         opens[i], 
                         highs[i], 
                         lows[i], 
-                        closes[i]]) for i in range(len(dates))]
+                        closes[i]]) for i in range(len(dateVals))]
             
                             
         candlestick_ohlc(ax1, quotes, width = 0.6, colorup='#53c156', colordown='#ff1717')
@@ -62,11 +72,11 @@ class CandlestickGraph():
     
         plt.xlabel('Date')
         plt.ylabel('Price')
-        plt.title('Candlestick Graph')
+        plt.title(name)
         plt.legend()
         
         if(save):
-            plt.savefig('candlestickgraph_' + str(self.fileCounter)+ '.png')
+            plt.savefig('CandlestickGraphs/candlestickgraph_' + name + str(self.fileCounter) + '.png')
             self.fileCounter+=1
         #plt.subplots_adjust(left=0.09, bottom=0.20, right=0.94, top=0.90, wspace=0.2, hspace=0)
         plt.show()  
@@ -75,7 +85,11 @@ class CandlestickGraph():
 """
 Test main function
 """
-if __name__ == "__main__":
-    
+import os 
+
+if __name__ == "__main__":   
     csg = CandlestickGraph()
-    csg.produceCandlestickGraph(csvfr.getDictionary('Data/bitcoin_price.csv'), False)
+    
+    for file in os.listdir("Data"):
+        if file.endswith("_price.csv"):
+            csg.produceWithDictionary(csvfr.getDictionary("Data/"+ file), file, True)

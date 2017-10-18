@@ -2,6 +2,7 @@ import CSVFileReader as csvfr
 import matplotlib.pyplot as plt
 from matplotlib.finance import candlestick_ohlc
 import matplotlib.dates as mdates
+import matplotlib.ticker as mticker
 
 """
 Displays a candlestick graph for a given dataset. 
@@ -67,18 +68,19 @@ class CandlestickGraph():
         fig.tight_layout()
         
         ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+        ax1.yaxis.set_major_formatter(mticker.FormatStrFormatter('%.2f'))
         ax1.set_ylim(0,max(max(opens), max(highs), max(closes)))
         ax1.grid(True)
     
         plt.xlabel('Date')
-        plt.ylabel('Price')
+        plt.ylabel('Price/$')
         plt.title(name)
         plt.legend()
         
         if(save):
             plt.savefig('CandlestickGraphs/candlestickgraph_' + name + str(self.fileCounter) + '.png')
             self.fileCounter+=1
-        #plt.subplots_adjust(left=0.09, bottom=0.20, right=0.94, top=0.90, wspace=0.2, hspace=0)
+        plt.subplots_adjust(left=0.12, bottom=0.20, right=0.94, top=0.90, wspace=0.2, hspace=0)
         plt.show()  
  
  
@@ -89,7 +91,7 @@ import os
 
 if __name__ == "__main__":   
     csg = CandlestickGraph()
-    
     for file in os.listdir("Data"):
         if file.endswith("_price.csv"):
             csg.produceWithDictionary(csvfr.getDictionary("Data/"+ file), file.replace(".csv",""), True)
+    

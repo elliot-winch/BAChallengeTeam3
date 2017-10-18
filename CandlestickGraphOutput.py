@@ -92,4 +92,4 @@ if __name__ == "__main__":
     
     for file in os.listdir("Data"):
         if file.endswith("_price.csv"):
-            csg.produceWithDictionary(csvfr.getDictionary("Data/"+ file), file, True)
+            csg.produceWithDictionary(csvfr.getDictionary("Data/"+ file), file.replace(".csv",""), True)

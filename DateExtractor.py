@@ -3,13 +3,9 @@ import datetime
 """
 getDate is used by getDictionary to build the datetime object
 from the string that the csv file provides
-
 @param string to convert to date (from csv data file)
-
 @returns datetime object
-
 @throws TypeError
-
 Author: Elliot Winch
 Date: 2017-14-10        
 """          
@@ -39,13 +35,9 @@ months = {
 
 """
 getMonth is a helper method for getDate.
-
 @param string to test as month 
-
 @returns int from 1 - 12 representing month
-
 @throws TypeError
-
 Author: Elliot Winch
 Date: 2017-14-10        
 """     
@@ -53,4 +45,4 @@ def getMonth(monthString):
     if monthString in months:
         return months[monthString]
     else:
-        raise TypeError
+raise TypeError

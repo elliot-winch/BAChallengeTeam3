@@ -26,7 +26,7 @@ class CandlestickGraph():
     def produceWithDatabase():
         pass
         
-    def produceWithDictionary(self, entries, name, save):
+    def produceWithDictionary(self, entries, name, save=False):
         dates = sorted(entries)
                     
         dateVals = []
@@ -76,11 +76,11 @@ class CandlestickGraph():
         plt.ylabel('Price/$')
         plt.title(name)
         plt.legend()
-        
+        plt.subplots_adjust(left=0.12, bottom=0.20, right=0.94, top=0.90, wspace=0.2, hspace=0)
+
         if(save):
             plt.savefig('CandlestickGraphs/candlestickgraph_' + name + str(self.fileCounter) + '.png')
             self.fileCounter+=1
-        plt.subplots_adjust(left=0.12, bottom=0.20, right=0.94, top=0.90, wspace=0.2, hspace=0)
         plt.show()  
  
  

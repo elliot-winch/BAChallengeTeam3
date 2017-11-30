@@ -97,7 +97,7 @@ class Database():
     """                                     
     def passCommand(self, commandString):
         if(commandString[:4] == 'DROP'):
-            print 'Not today, Satan.'
+            print ('Not today, Satan.')
         else:
             self.db.execute(commandString)
         
@@ -134,4 +134,4 @@ class Database():
 if __name__ == "__main__":
     d = Database("Data/bitcoin_price.csv")
     for row in d.getEntries():
-        print row["Date"]
+        print (row["Date"])

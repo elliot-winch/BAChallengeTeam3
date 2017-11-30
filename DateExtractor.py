@@ -45,4 +45,4 @@ def getMonth(monthString):
     if monthString in months:
         return months[monthString]
     else:
-raise TypeError
+        raise TypeError

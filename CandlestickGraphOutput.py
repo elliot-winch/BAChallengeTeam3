@@ -91,7 +91,7 @@ import os
 
 if __name__ == "__main__":   
     csg = CandlestickGraph()
-    for file in os.listdir("Data"):
+    for file in os.listdir('CryptoPriceData'):
         if file.endswith("_price.csv"):
             csg.produceWithDictionary(csvfr.getDictionary("Data/"+ file), file.replace(".csv",""), True)
     

@@ -1,4 +1,4 @@
-import CSVFileReader as csvfr
+import CryptoCSVFileReader as csvfr
 import matplotlib.pyplot as plt
 from matplotlib.finance import candlestick_ohlc
 import matplotlib.dates as mdates
@@ -93,5 +93,5 @@ if __name__ == "__main__":
     csg = CandlestickGraph()
     for file in os.listdir('CryptoPriceData'):
         if file.endswith("_price.csv"):
-            csg.produceWithDictionary(csvfr.getDictionary("Data/"+ file), file.replace(".csv",""), True)
+            csg.produceWithDictionary(csvfr.getDictionary("CryptoPriceData/"+ file), file.replace(".csv",""), True)
     

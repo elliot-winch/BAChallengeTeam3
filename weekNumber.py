@@ -3,13 +3,12 @@ import numpy as np
 from datetime import datetime
 
 
-df = pd.read_csv("CryptoPriceData/bitcoin_price.csv")
+df = pd.read_csv("CryptoPriceData/input.csv")
 weeknoList = []
 yearnoList = []
 month = 0
 
 for val in df["Date"]:
-    print val
     abrev =  val[0:3]
     if abrev == "Jan":
         month = 1
@@ -47,5 +46,18 @@ for val in df["Date"]:
     yearnoList.append(year)
 df["Week Number"] = weeknoList
 df["Year"] = yearnoList
+df = df.iloc[:,1:] # removing extra first column index
 
+df["EndWeekChange"] = [None] * len(df)
+oldstart = 40 # initial week in price data set
+initialIndex = 0
+for i in range(len(df)):
+    newstart = df.iloc[i, 7]
+    print newstart
+    if(newstart != oldstart):
+        oldPrice  = df["Close"][initialIndex]
+        newPrice = df["Close"][i]
+        df.iloc[initialIndex, (len(df.columns)-1)] = ((oldPrice-newPrice)/newPrice)
+        initialIndex = i
+    oldstart = newstart
 df.to_csv("CryptoPriceData/bitcoin_price.csv")

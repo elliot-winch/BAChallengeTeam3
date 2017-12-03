@@ -1,51 +1,51 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import math
+import sklearn
+from sklearn.linear_model import LinearRegression
 
+pricesDF = pd.read_csv("CryptoPriceData/bitcoin_price.csv")
+sentimentDF = pd.read_csv("sentiment_scores.csv")
+lengthSent = int(len(sentimentDF.index) *.8)
 
-df = pd.read_csv("CryptoPriceData/bitcoin_price.csv")
-weeknoList = []
-yearnoList = []
-month = 0
+dfX = sentimentDF.iloc[0:lengthSent,:]
+trainX = []
+dfX2 = sentimentDF.iloc[lengthSent:, :]
+trainY = []
 
-for val in df["Date"]:
-    print val
-    abrev =  val[0:3]
-    if abrev == "Jan":
-        month = 1
-    if abrev == "Feb":
-        month = 2
-    if abrev == "Mar":
-        month = 3
-    if abrev == "Apr":
-        month = 4
-    if abrev == "May":
-        month = 5
-    if abrev == "Jun":
-        month = 6
-    if abrev == "Jul":
-        month = 7
-    if abrev == "Aug":
-        month = 8
-    if abrev == "Sep":
-        month = 9
-    if abrev == "Oct":
-        month = 10
-    if abrev == "Nov":
-        month = 11
-    if abrev == "Dec":
-        month = 12
+testX = []
+testY = []
 
-    date = int(val[4:6])
+lm = LinearRegression()
+print dfX2
 
-    year = int(val[8:12])
-    s = "20120213"
-    date = datetime(year= year, month= month, day= date)
-    weekNumber = datetime.date(date).isocalendar()[1]
+for i in range(len(dfX)):
+    year =  dfX.iloc[i,0]
+    week = dfX.iloc[i,1]
+    for j in range(len(pricesDF)):
 
-    weeknoList.append(weekNumber)
-    yearnoList.append(year)
-df["Week Number"] = weeknoList
-df["Year"] = yearnoList
+        if ( pricesDF.iloc[j,(len(pricesDF.columns)-3)] == week and pricesDF.iloc[j,(len(pricesDF.columns)-2)] == year and math.isnan(pricesDF["EndWeekChange"][j]) == False):
+            #continue
+            lister = []
+            lister.append(dfX["sentiment"][i])
+            trainX.append(lister)
+            lister = []
+            trainY.append(pricesDF["EndWeekChange"][j])
+i = 0
+for ix, x in dfX2["sentiment"].iteritems():
+    year =  dfX2.iloc[i,0]
+    week = dfX2.iloc[i,1]
+    print year
+    print week
+    for j in range(len(pricesDF)):
+        if ( pricesDF.iloc[j,(len(pricesDF.columns)-3)] == week and pricesDF.iloc[j,(len(pricesDF.columns)-2)] == year and math.isnan(pricesDF["EndWeekChange"][j]) == False):
+            #continue
+            testX.append(dfX2["sentiment"][ix])
+            testY.append(pricesDF["EndWeekChange"][j])
+    i+=1
+print trainX
+model = lm.fit(trainX,trainY)
+print model.coef_
 
-df.to_csv("CryptoPriceData/bitcoin_price.csv")
+    #print "*********************"

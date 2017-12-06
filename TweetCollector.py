@@ -12,7 +12,9 @@ access_secret = "Fc4LYOdF7kzpkU9d4JYgdkNgzCTs9vks8uSL6EIlMvmWb"
 
 
 class TweetSemanticAnalyser():
-    def __init__(self, username):
+    def __init__(self, username, filtered = False):
+        self.filterWords = ["bitcoin", "cryptocurrency", "crypto", "ico"]
+        self.filtered = False
         self.username = username
         self.alltweets = []
         self.semanticScores = {}
@@ -42,7 +44,7 @@ class TweetSemanticAnalyser():
 
         #keep grabbing tweets until there are no tweets left to grab
         while len(new_tweets) > 0:
-            print ("getting tweets before %s" % (oldest))
+            print ("getting tweets for %s" % (self.username))
 
             #all subsiquent requests use the max_id param to prevent duplicates
             new_tweets = api.user_timeline(screen_name = self.username,count=200,max_id=oldest)
@@ -63,9 +65,27 @@ class TweetSemanticAnalyser():
                 writer = csv.writer(f)
                 writer.writerow(["id","created_at","text"])
                 writer.writerows(outtweets)
+        
+        if(self.filtered):
+            for tweet in self.alltweets:
+                self.semanticScores[tweet.created_at] = TextBlob(tweet.text).sentiment
+        else:
+            for tweet in self.alltweets:
+                tweetByWords = tweet.text.split()
+                
+                
+                for word in tweetByWords:
+                    for filterWord in self.filterWords:
+                        if(word == filterWord):
+                            self.semanticScores[tweet.created_at] = TextBlob(tweet.text).sentiment
+                            break
+                        else:
+                            continue
+                        break
+                    else:
+                        continue
+                    break
 
-        for tweet in self.alltweets:
-            self.semanticScores[tweet.created_at] = TextBlob(tweet.text).sentiment
 
 
     def getSentimentScores(self):
@@ -73,14 +93,24 @@ class TweetSemanticAnalyser():
 
 if __name__ == "__main__":
 
-    usernames = ["coindesk", "Cointelegraph"]
+    filtered = {} #dictionary to map username to bool, whether or not to filter
+    
+    with open("Twitter Users.csv", 'r') as csvFile:
+        csvreader = csv.reader(csvFile, delimiter = ",")
+        
+        for row in csvreader:
+            if(row[3] == 'F'):
+                filtered[row[0][1:]] = row[3] == 'F'
+                
+    #usernames = ["coindesk", "Cointelegraph"]
+    #filteredUsernames = []
 
     values = {}
     numTweetsInWeek = {}
 
-    for username in usernames:
+    for username in filtered:
         try:
-            a = TweetSemanticAnalyser(username)
+            a = TweetSemanticAnalyser(username, filtered[username])
         except tweepy.TweepError as e:
             print (e.message[0]['code'])  # prints 34
             print (e.args[0][0]['code'])  # prints 34
@@ -102,11 +132,11 @@ if __name__ == "__main__":
             else:
                 values[weekString] = scores[date][0]
                 numTweetsInWeek[weekString] = 1
-
+                
     outtweets = [[date[:4], date[-2:], values[date] / numTweetsInWeek[date]] for date in values]
     location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
     with open(os.path.join(location, 'sentiment scores.csv'), 'w+') as f:
-                writer = csv.writer(f)
-                writer.writerow(["week","year","average sentiment score"])
-                writer.writerows(outtweets)
+        writer = csv.writer(f)
+        writer.writerow(["year","week","average sentiment score"])
+        writer.writerows(outtweets)

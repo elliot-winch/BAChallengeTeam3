@@ -104,7 +104,7 @@ if __name__ == "__main__":
                 values[weekString] = scores[date][0]
                 numTweetsInWeek[weekString] = 1
 
-    outtweets = [[date[:4], date[-2:], values[date]] for date in values]
+    outtweets = [[date[:4], date[-2:], values[date] / numTweetsInWeek[date] for date in values]
     location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
     with open(os.path.join(location, 'sentiment scores.csv'), 'w+') as f:

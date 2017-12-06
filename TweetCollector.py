@@ -98,7 +98,6 @@ if __name__ == "__main__":
 
             if(weekString in values):
                 values[weekString] += scores[date][0]
-                print(numTweetsInWeek[weekString] )
                 numTweetsInWeek[weekString] +=1
             else:
                 values[weekString] = scores[date][0]

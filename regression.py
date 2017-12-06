@@ -18,7 +18,7 @@ testX = []
 testY = []
 
 lm = LinearRegression()
-print dfX2
+print (dfX2)
 
 for i in range(len(dfX)):
     year =  dfX.iloc[i,0]
@@ -36,16 +36,16 @@ i = 0
 for ix, x in dfX2["sentiment"].iteritems():
     year =  dfX2.iloc[i,0]
     week = dfX2.iloc[i,1]
-    print year
-    print week
+    print (year)
+    print (week)
     for j in range(len(pricesDF)):
         if ( pricesDF.iloc[j,(len(pricesDF.columns)-3)] == week and pricesDF.iloc[j,(len(pricesDF.columns)-2)] == year and math.isnan(pricesDF["EndWeekChange"][j]) == False):
             #continue
             testX.append(dfX2["sentiment"][ix])
             testY.append(pricesDF["EndWeekChange"][j])
     i+=1
-print trainX
+print (trainX)
 model = lm.fit(trainX,trainY)
-print model.coef_
+print (model.coef_)
 
     #print "*********************"

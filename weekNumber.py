@@ -53,7 +53,7 @@ oldstart = 40 # initial week in price data set
 initialIndex = 0
 for i in range(len(df)):
     newstart = df.iloc[i, 7]
-    print newstart
+    print (newstart)
     if(newstart != oldstart):
         oldPrice  = df["Close"][initialIndex]
         newPrice = df["Close"][i]

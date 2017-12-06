@@ -3,7 +3,7 @@ import numpy as np
 from datetime import datetime
 
 
-df = pd.read_csv("CryptoPriceData/input.csv")
+df = pd.read_csv("CryptoPriceData/inputbitcoinprices.csv")
 weeknoList = []
 yearnoList = []
 month = 0
@@ -57,7 +57,7 @@ for i in range(len(df)):
     if(newstart != oldstart):
         oldPrice  = df["Close"][initialIndex]
         newPrice = df["Close"][i]
-        df.iloc[initialIndex, (len(df.columns)-1)] = ((oldPrice-newPrice)/newPrice)
+        df.iloc[initialIndex, (len(df.columns)-1)] = ((oldPrice-newPrice)/newPrice) * 100 # where i know its weird but old price is actually the most recent price, new price is just further down the time series so its actually an older date 
         initialIndex = i
     oldstart = newstart
 df.to_csv("CryptoPriceData/bitcoin_price.csv")

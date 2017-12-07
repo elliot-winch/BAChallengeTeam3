@@ -25,70 +25,70 @@ class TweetSemanticAnalyser():
         #Twitter only allows access to a users most recent 3240 tweets with this method
 
         try:
-            with open(username + "_tweets.csv", "r") as f: 
+            with open(username + "_tweets.csv", "r") as f:
                 print(username + " tweets found")
                 csvreader = csv.reader(f, delimiter = ",")
                 for row in csvreader:
                     try:
                         datetime.strptime(row[1], "%Y-%m-%d %H:%M:%S")
-                        
+
                         self.semanticScores[row[1]] = TextBlob(row[2]).sentiment
                     except IndexError:
                         continue
                     except ValueError:
                         continue
-                                
-        except FileNotFoundError:
+
+        except:
             #authorize twitter, initialize tweepy
             auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
             auth.set_access_token(access_key, access_secret)
             api = tweepy.API(auth)
-    
+
             #make initial request for most recent tweets (200 is the maximum allowed count)
             new_tweets = api.user_timeline(self.username,count=200)
-    
+
             #save most recent tweets
             self.alltweets.extend(new_tweets)
-    
+
             if(len(self.alltweets) <= 0):
                 print("Failed to find tweets")
                 return
-    
+
             #save the id of the oldest tweet less one
             oldest = self.alltweets[-1].id - 1
-    
+
             #keep grabbing tweets until there are no tweets left to grab
             while len(new_tweets) > 0:
                 print ("getting tweets for %s" % (self.username))
-    
+
                 #all subsiquent requests use the max_id param to prevent duplicates
                 new_tweets = api.user_timeline(screen_name = self.username,count=200,max_id=oldest)
-    
+
                 #save most recent tweets
                 self.alltweets.extend(new_tweets)
-    
+
                 #update the id of the oldest tweet less one
                 oldest = self.alltweets[-1].id - 1
                 print ("...%s tweets downloaded so far" % (len(self.alltweets)))
-    
+
             #transform the tweepy tweets into a 2D array that will populate the csv
             outtweets = [[tweet.id_str, tweet.created_at, tweet.text.encode("utf-8")] for tweet in self.alltweets]
             location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
-    
+
             if(createFile):
                 with open(os.path.join(location, '%s_tweets.csv' % self.username), 'w+') as f:
                     writer = csv.writer(f)
                     writer.writerow(["id","created_at","text"])
                     writer.writerows(outtweets)
-            
+
             if(self.filtered == False):
                 for tweet in self.alltweets:
                     self.semanticScores[tweet.created_at] = TextBlob(tweet.text).sentiment
             else:
                 for tweet in self.alltweets:
                     tweetByWords = tweet.text.split()
-                    
-                    
+
+
                     for word in tweetByWords:
                         for filterWord in self.filterWords:
                             if(word == filterWord):
@@ -98,21 +98,20 @@ class TweetSemanticAnalyser():
                                 continue
                             break
 
-
     def getSentimentScores(self):
         return self.semanticScores
 
 if __name__ == "__main__":
 
     filtered = {} #dictionary to map username to bool, whether or not to filter
-    
+
     with open("Twitter Users.csv", 'r') as csvFile:
         csvreader = csv.reader(csvFile, delimiter = ",")
-        
+
         for row in csvreader:
-            if(row[3] == 'F'):
-                filtered[row[0][1:]] = row[3] == 'F'
-                
+            if(row[3] == 'F'): # place U here if you want the unfiltered ones 
+                filtered[row[0][1:]] = row[3] == 'U'
+
     #usernames = ["coindesk", "Cointelegraph"]
     #filteredUsernames = []
 
@@ -133,12 +132,12 @@ if __name__ == "__main__":
                 datetimeObj = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
             else:
                 datetimeObj = date
-                
+
             weekString = str(datetimeObj.year)
-            
+
             if datetimeObj.isocalendar()[1] < 10 :
                 weekString += '0'
-            
+
             weekString+= str(datetimeObj.isocalendar()[1])
 
             if(weekString in values):
@@ -147,11 +146,11 @@ if __name__ == "__main__":
             else:
                 values[weekString] = scores[date][0]
                 numTweetsInWeek[weekString] = 1
-                
+
     outtweets = [[date[:4], date[-2:], values[date] / numTweetsInWeek[date]] for date in values]
     location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__)))
 
-    with open(os.path.join(location, 'sentiment scores.csv'), 'w+') as f:
+    with open(os.path.join(location, 'sentiment_biased_scores.csv'), 'w+') as f: # where sentiment real scores is the unbiased file
         writer = csv.writer(f)
         writer.writerow(["year","week","average sentiment score"])
         writer.writerows(outtweets)

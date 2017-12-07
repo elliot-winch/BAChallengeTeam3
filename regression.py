@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
 
 pricesDF = pd.read_csv("CryptoPriceData/bitcoin_price.csv")
-sentimentDF = pd.read_csv("sentiment_real_scores.csv")
+sentimentDF = pd.read_csv("sentiment_biased_scores.csv")
 lengthSent = int(len(sentimentDF.index) *.9)
 
 dfX = sentimentDF.iloc[0:lengthSent,:] # dataframe for our training data
